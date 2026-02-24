@@ -1,23 +1,33 @@
 import axios from "axios";
 
-const api = axios.create({
-    baseURL: "https://api.spoonacular.com",
-    params: {
-        apiKey: import.meta.env.VITE_SPOONACULAR_API_KEY,
-    },
-});
+const API_KEY ="c7d28ce8bea347e0ac13496ffb60e0e5";
+const BASE_URL = "https://api.spoonacular.com/recipes";
 
-export const searchRecipes = async (query = "") => {
-    const response = await api.get("/recipes/complexSearch", {
-        params: {
-            query,
-            number: 12,
-            addRecipeInformation: true,
-        },
-    });
-    return response;
+export const fetchRecipes = async (query = "pasta") => {
+    try {
+        const response = await axios.get(`${BASE_URL}/complexSearch`, {
+            params: {
+                apiKey: API_KEY,
+                query,
+                number: 12,
+            },
+        });
+        return response.data.results;
+    } catch (error) {
+        console.error("Error fetching recipes", error);
+        return [];
+    }
+    
 };
-export const getRecipeDetails = async (id) => {
-    const response = await api.get(`/recipes/${id}/information`);
-    return response;
+
+export const fetchRecipeById = async (id) => {
+    try {
+        const response = await axios.get(`${BASE_URL}/${id}/information`, {
+            params: { apiKey: API_KEY },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching recipe details:", error);
+        return null;
+    }
 };

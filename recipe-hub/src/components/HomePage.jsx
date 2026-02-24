@@ -1,60 +1,44 @@
 import { useEffect, useState } from "react";
-import { searchRecipes } from "../services/spoonacular";
+import { fetchRecipes } from "../services/spoonacular";
+import RecipeCard from "../components/RecipeCard";
 import SearchBar from "../components/SearchBar";
-import RecipeList from "../components/RecipeList"
-import Loader from "../components/Loader"
-import ErrorMessage from "../components/ErrorMessage"
 
 const HomePage = () => {
     const [recipes, setRecipes] = useState([]);
-    const [query, setQuery] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const fetchRecipes = async (searchTerm = "") => {
-        try {
-            setLoading(true);
-            setError(null);
-
-            const data = await searchRecipes(searchTerm);
-            setRecipes(data);
-        } catch (error) {
-            console.error(error);
-            setError("Failed to fetch recipes. Please try again.");
-        } finally {
-            setLoading(false);
-        }
+    const getRecipes = async (query = "chicken") => {
+        setLoading(true);
+        const data = await fetchRecipes(query);
+        setRecipes(data);
+        setLoading(false);
     };
 
     useEffect(() => {
-        fetchRecipes();
+        const loadRecipes = async () => {
+            setLoading(true);
+            const data = await fetchRecipes("chicken");
+            setRecipes(data);
+            setLoading(false);
+        };
+        loadRecipes();
     }, []);
 
-    const handleSearch= (value) => {
-        setQuery(value);
-        fetchRecipes(value);
-    };
-
     return (
-        <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-            <div className="max-w-6xl mx-auto">
-                <h1 className="text-2xl md:text-3xl font-bold mb-6">RecipeHub</h1>
-                <SearchBar onSearch={handleSearch} />
-                {loading && <Loader />}
-                {error && <ErrorMessage message={error} />}
-                {!loading && !error && (
-                <>
-                    <h2 className="text-lg font-semibold mt-6 mb-4">{query
-                        ? `Results for "${query}"`
-                        : "Popular Recipes"}
-                    </h2>
-                    <RecipeList recipes={recipes} />
-                </>
-                )}
-            </div>
+        <div className="container mx-auto p-4">
+            <SearchBar onSearch={getRecipes} />
+            {loading ? (
+                <p className="text-center mt-10">Loading recipes...</p>
+            ): (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {recipes.map((recipe) => (
+                        <RecipeCard key={recipe.id} recipe={recipe} />
+                    ))}
+                </div>
+            )}
         </div>
-    )
-
-}
+    );
+    
+};
 
 export default HomePage;
