@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 const RecipeCard = ({ recipe }) => (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+    <div className="bg-gray-400 shadow-md rounded-lg overflow-hidden">
         {recipe.image && (
             <img 
             src={recipe.image}
@@ -13,7 +13,7 @@ const RecipeCard = ({ recipe }) => (
             <h2 className="font-bold text-lg mb-2">{recipe.title}</h2>
             <Link 
             to={`/recipe/${recipe.id}`}
-            className="text-blue-500 hover:underline"
+            className="text-blue-600 hover:underline"
             >
                 View Details
             </Link>
